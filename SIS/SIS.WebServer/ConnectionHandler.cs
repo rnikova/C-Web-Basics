@@ -1,14 +1,15 @@
-﻿using SIS.HTTP.Common;
+﻿using System;
+using System.Text;
 using SIS.HTTP.Enums;
-using SIS.HTTP.Exceptions;
+using SIS.HTTP.Common;
 using SIS.HTTP.Requests;
+using System.Net.Sockets;
+using SIS.HTTP.Exceptions;
+using SIS.WebServer.Result;
 using SIS.HTTP.Requests.Contracts;
 using SIS.HTTP.Responses.Contracts;
-using SIS.WebServer.Results;
 using SIS.WebServer.Routing.Contracts;
-using System;
-using System.Net.Sockets;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace SIS.WebServer
 {
@@ -27,52 +28,52 @@ namespace SIS.WebServer
             this.serverRoutingTable = serverRoutingTable;
         }
 
-        public void ProcessRequest()
+        public async Task ProcessRequestAsync()
         {
+            IHttpResponse httpResponse = null;
+
             try
             {
-                var httpRequest = this.ReadRequest();
+                IHttpRequest httpRequest = await this.ReadRequestAsync();
 
                 if (httpRequest != null)
                 {
                     Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
 
-                    var httpResponse = this.HandleRequest(httpRequest);
-
-                    this.PrepareResponse(httpResponse);
+                    httpResponse = this.HandleRequest(httpRequest);
                 }
             }
-            catch (BadRequestException bre)
+            catch (BadRequestException e)
             {
-
-                this.PrepareResponse(new TextResult(bre.ToString(), HttpResponseStatusCode.BadRequest));
+                httpResponse = new TextResult(e.Message, HttpResponseStatusCode.BadRequest);
             }
             catch (Exception e)
             {
-                this.PrepareResponse(new TextResult(e.ToString(), HttpResponseStatusCode.InternalServerError));
+                httpResponse = new TextResult(e.Message, HttpResponseStatusCode.InternalServerError);
             }
 
+            this.PrepareResponse(httpResponse);
             this.client.Shutdown(SocketShutdown.Both);
         }
 
-        private IHttpRequest ReadRequest()
+        private async Task<IHttpRequest> ReadRequestAsync()
         {
             var result = new StringBuilder();
             var data = new ArraySegment<byte>(new byte[1024]);
 
             while (true)
             {
-                int numberOfBytesRead = this.client.Receive(data.Array, SocketFlags.None);
+                int numberOfBytesToRead = await this.client.ReceiveAsync(data, SocketFlags.None);
 
-                if (numberOfBytesRead == 0)
+                if (numberOfBytesToRead == 0)
                 {
                     break;
                 }
 
-                var bytesAsString = Encoding.UTF8.GetString(data.Array, 0, numberOfBytesRead);
+                var bytesAsString = Encoding.UTF8.GetString(data.Array, 0, numberOfBytesToRead);
                 result.Append(bytesAsString);
 
-                if (numberOfBytesRead < 1023)
+                if (numberOfBytesToRead < 1023)
                 {
                     break;
                 }
@@ -90,7 +91,7 @@ namespace SIS.WebServer
         {
             if (!this.serverRoutingTable.Contains(httpRequest.RequestMethod, httpRequest.Path))
             {
-                return new TextResult($"Route with this method {httpRequest.RequestMethod} and path \"{httpRequest.Path}\" not found.", HttpResponseStatusCode.NotFound);
+                return new TextResult($"Route with method {httpRequest.RequestMethod} and path \"{httpRequest.Path}\" not found.", HttpResponseStatusCode.NotFound);
             }
 
             return this.serverRoutingTable.Get(httpRequest.RequestMethod, httpRequest.Path).Invoke(httpRequest);

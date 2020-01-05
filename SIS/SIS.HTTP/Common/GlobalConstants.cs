@@ -1,6 +1,6 @@
 ﻿namespace SIS.HTTP.Common
 {
-    public static class GlobalConstants
+    public class GlobalConstants
     {
         public const string HttpOneProtocolFragment = "HTTP/1.1";
 
@@ -8,6 +8,6 @@
 
         public const string HttpNewLine = "\r\n";
 
-        public const string UnsupportedHttpMethodException = "The HTTP method - {0} is not supported.";
+        public const string UnsupportedHttpMethodExceptionMessage = "The HTTP method - {0} is not supported.";
     }
 }
