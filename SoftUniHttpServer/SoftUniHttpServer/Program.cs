@@ -38,6 +38,8 @@ namespace SoftUniHttpServer
 
             var response = "HTTP/1.0 200 OK" + NewLine
                 + "Content-Type: text/html" + NewLine
+                + "Set-Cookie: cookie1=test"
+                + "Set-Cookie: cookie2=test2"
                 + "Server: MyCustomServer/1.0" + NewLine
                 + $"Content-Length: {responseBody.Length}" + NewLine + NewLine
                 + responseBody;
