@@ -6,10 +6,12 @@ using SIS.HTTP.Requests;
 using System.Net.Sockets;
 using SIS.HTTP.Exceptions;
 using SIS.WebServer.Result;
+using System.Threading.Tasks;
 using SIS.HTTP.Requests.Contracts;
 using SIS.HTTP.Responses.Contracts;
 using SIS.WebServer.Routing.Contracts;
-using System.Threading.Tasks;
+using SIS.WebServer.Sessions;
+using SIS.HTTP.Cookies;
 
 namespace SIS.WebServer
 {
@@ -40,7 +42,9 @@ namespace SIS.WebServer
                 {
                     Console.WriteLine($"Processing: {httpRequest.RequestMethod} {httpRequest.Path}...");
 
+                    var sessionId = this.SetRequestSession(httpRequest);
                     httpResponse = this.HandleRequest(httpRequest);
+                    this.SetResponseSession(httpResponse, sessionId);
                 }
             }
             catch (BadRequestException e)
@@ -95,6 +99,34 @@ namespace SIS.WebServer
             }
 
             return this.serverRoutingTable.Get(httpRequest.RequestMethod, httpRequest.Path).Invoke(httpRequest);
+        }
+
+        private string SetRequestSession(IHttpRequest httpRequest)
+        {
+            string sessionId = null;
+
+            if (httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
+            {
+                var cookie = httpRequest.Cookies.GetCookie(HttpSessionStorage.SessionCookieKey);
+
+                sessionId = cookie.Value;
+            }
+            else
+            {
+                sessionId = Guid.NewGuid().ToString();
+            }
+
+            httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+
+            return httpRequest.Session.Id;
+        }
+
+        private void SetResponseSession(IHttpResponse response, string sessionId)
+        {
+            if (sessionId != null)
+            {
+                response.AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey, sessionId));
+            }
         }
 
         private void PrepareResponse(IHttpResponse httpResponse)
