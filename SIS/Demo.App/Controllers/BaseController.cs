@@ -5,6 +5,7 @@ using SIS.WebServer.Result;
 using SIS.HTTP.Requests.Contracts;
 using SIS.HTTP.Responses.Contracts;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 
 namespace Demo.App.Controllers
 {
@@ -12,21 +13,21 @@ namespace Demo.App.Controllers
     {
         protected IHttpRequest HttpRequest { get; set; }
 
-        private bool IsLoggedIn()
+        protected Dictionary<string, object> ViewData = new Dictionary<string, object>();
+
+        protected bool IsLoggedIn()
         {
             return this.HttpRequest.Session.ContainsParameter("username");
         }
 
         private string ParseTemplate(string viewContent)
         {
-            if (this.IsLoggedIn())
+            foreach (var param in this.ViewData)
             {
-                return viewContent.Replace("@Model.HelloMessage", $"Hello, {this.HttpRequest.Session.GetParameter("username")}");
+                viewContent = viewContent.Replace($"@Model.{param.Key.ToLower()}", param.Value.ToString());
             }
-            else
-            {
-                return viewContent.Replace("@Model.HelloMessage", "Hello World From SIS.WebServer");
-            }
+
+            return viewContent;
         }
 
         public IHttpResponse View([CallerMemberName] string view = null)
@@ -39,8 +40,6 @@ namespace Demo.App.Controllers
             viewContent = this.ParseTemplate(viewContent);
 
             HtmlResult htmlResult = new HtmlResult(viewContent, HttpResponseStatusCode.Ok);
-
-            htmlResult.Cookies.AddCookie(new HttpCookie("lang", "en"));
 
             return htmlResult;
         }

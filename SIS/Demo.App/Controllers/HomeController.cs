@@ -5,18 +5,25 @@ namespace Demo.App.Controllers
 {
     public class HomeController : BaseController
     {
-        public IHttpResponse Home(IHttpRequest httpRequest)
+        public HomeController(IHttpRequest httpRequest)
         {
             this.HttpRequest = httpRequest;
-
-            return this.View();
         }
 
-        public IHttpResponse Login(IHttpRequest httpRequest)
+        public IHttpResponse Index(IHttpRequest httpRequest)
         {
-            httpRequest.Session.AddParameter("username", "Pesho");
+            return this.View();
+        }
+        
+        public IHttpResponse Home(IHttpRequest httpRequest)
+        {
+            if (!this.IsLoggedIn())
+            {
+                return this.Redirect("/login");
+            }
 
-            return this.Redirect("/");
+            this.ViewData["Username"] = this.HttpRequest.Session.GetParameter("username");
+            return this.View();
         }
     }
 }
