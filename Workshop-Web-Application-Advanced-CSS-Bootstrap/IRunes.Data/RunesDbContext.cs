@@ -25,7 +25,7 @@
                 .HasKey(album => album.Id);
 
             modelBuilder.Entity<Album>()
-                .HasMany(album => album.Traks);
+                .HasMany(album => album.Tracks);
 
             modelBuilder.Entity<Track>()
                 .HasKey(track => track.Id);

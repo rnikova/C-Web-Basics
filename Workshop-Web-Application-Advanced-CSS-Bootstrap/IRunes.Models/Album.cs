@@ -12,6 +12,6 @@ namespace IRunes.Models
 
         public decimal Price { get; set; }
 
-        public ICollection<Track> Traks { get; set; } = new HashSet<Track>();
+        public ICollection<Track> Tracks { get; set; } = new HashSet<Track>();
     }
 }

@@ -29,7 +29,7 @@ namespace IRunes.App.Controllers
             using(var context = new RunesDbContext())
             {
                 string username = ((ISet<string>)request.FormData["username"]).FirstOrDefault();
-                string password = ((ISet<string>)request.FormData["passwors"]).FirstOrDefault();
+                string password = ((ISet<string>)request.FormData["password"]).FirstOrDefault();
 
                 User userFromDb = context.Users
                     .FirstOrDefault(user => 
@@ -58,7 +58,7 @@ namespace IRunes.App.Controllers
             using (var context = new RunesDbContext())
             {
                 string username = ((ISet<string>)request.FormData["username"]).FirstOrDefault();
-                string password = ((ISet<string>)request.FormData["passwors"]).FirstOrDefault();
+                string password = ((ISet<string>)request.FormData["password"]).FirstOrDefault();
                 string confirmPassword = ((ISet<string>)request.FormData["confirmPassword"]).FirstOrDefault();
                 string email = ((ISet<string>)request.FormData["email"]).FirstOrDefault();
 
