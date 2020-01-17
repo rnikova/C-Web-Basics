@@ -65,7 +65,7 @@ namespace SIS.WebServer
 
         private IHttpResponse ReturnIfResource(IHttpRequest httpRequest)
         {
-            string folderPrefix = "/../../../../";
+            string folderPrefix = "../";
             string resourcesFolderPath = "Resources/";
             string requestedResource = httpRequest.Path;
             string assemblyLocation = Assembly.GetExecutingAssembly().Location;
