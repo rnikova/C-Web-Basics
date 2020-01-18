@@ -17,6 +17,7 @@ namespace IRunes.App.Controllers
             {
                 return this.Redirect("/Users/Login");
             }
+
             using (var context = new RunesDbContext())
             {
                 ICollection<Album> allAlbums = context.Albums.ToList();
@@ -27,7 +28,9 @@ namespace IRunes.App.Controllers
                 }
                 else
                 {
-                    this.ViewData["Albums"] = string.Join("<br />", context.Albums.Select(album => album.ToHtmlAll()).ToList());
+                    this.ViewData["Albums"] =
+                        string.Join(string.Empty,
+                        allAlbums.Select(album => album.ToHtmlAll()).ToList());
                 }
 
                 return this.View();
@@ -46,6 +49,11 @@ namespace IRunes.App.Controllers
 
         public IHttpResponse CreateConfirm(IHttpRequest httpRequest)
         {
+            if (!this.IsLoggedIn(httpRequest))
+            {
+                return this.Redirect("/Users/Login");
+            }
+
             using (var context = new RunesDbContext())
             {
                 string name = ((ISet<string>)httpRequest.FormData["name"]).FirstOrDefault();
@@ -76,7 +84,9 @@ namespace IRunes.App.Controllers
 
             using (var context = new RunesDbContext())
             {
-                Album albumFromDb = context.Albums.Include(album => album.Tracks).SingleOrDefault(album => album.Id == albumId);
+                Album albumFromDb = context.Albums
+                    .Include(album => album.Tracks)
+                    .SingleOrDefault(album => album.Id == albumId);
 
                 if (albumFromDb == null)
                 {

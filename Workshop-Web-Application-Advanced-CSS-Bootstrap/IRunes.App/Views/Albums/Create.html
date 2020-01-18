@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>IRunes</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
 </head>
 <body>
     <div>
@@ -30,25 +31,25 @@
         </header>
         <hr style="height: 2px" />
         <main>
-            <h1>Create Album</h1>
-            <hr style="height: 2px" />
-            <form action="/Albums/Create" method="post">
-                <div>
+            <h1 class="text-success text-center">Create Album</h1>
+            <hr class="bg-success w-50" style="height: 2px" />
+            <form action="/Albums/Create" class="w-50 mx-auto" method="POST">
+                <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Name..." />
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Name..." />
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="cover">Cover</label>
-                    <input type="text" id="cover" name="cover" placeholder="Cover..." />
+                    <input type="text" class="form-control" id="cover" name="cover" placeholder="Cover..." />
                 </div>
-                <hr style="height: 2px" />
-                <div>
-                    <button type="submit">Create</button>
-                    <a href="/Albums/All">Back To All</a>
+                <hr class="bg-success" style="height: 2px" />
+                <div class="d-flex justify-content-around mt-5">
+                    <button type="submit" class="btn bg-success text-white">Create</button>
+                    <a href="/Albums/All" class="btn bg-success text-white">Back To All</a>
                 </div>
             </form>
         </main>
-        <hr style="height: 2px" />
+        <hr class="bg-success mt-5" style="height: 2px" />
         <footer>
             <h5>CopyRight &copy; Sanity Design Studios. All rights reserved.</h5>
         </footer>

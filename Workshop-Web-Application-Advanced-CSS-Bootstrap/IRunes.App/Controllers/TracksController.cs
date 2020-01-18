@@ -20,7 +20,6 @@ namespace IRunes.App.Controllers
             string albumId = httpRequest.QueryData["albumId"].ToString();
 
             this.ViewData["AlbumId"] = albumId;
-
             return this.View();
         }
 
@@ -46,16 +45,17 @@ namespace IRunes.App.Controllers
                 string link = ((ISet<string>)httpRequest.FormData["link"]).FirstOrDefault();
                 string price = ((ISet<string>)httpRequest.FormData["price"]).FirstOrDefault();
 
-                Track trackFromDb = new Track
+                Track trackForDb = new Track
                 {
                     Name = name,
                     Link = link,
                     Price = decimal.Parse(price)
                 };
 
-                albumFromDb.Tracks.Add(trackFromDb);
-                albumFromDb.Price = (albumFromDb.Tracks.Select(track => track.Price).Sum() * 87) / 100;
-
+                albumFromDb.Tracks.Add(trackForDb);
+                albumFromDb.Price = (albumFromDb.Tracks
+                                         .Select(track => track.Price)
+                                         .Sum() * 87) / 100;
                 context.Update(albumFromDb);
                 context.SaveChanges();
             }
@@ -70,8 +70,8 @@ namespace IRunes.App.Controllers
                 return this.Redirect("/Users/Login");
             }
 
-            string trackId = httpRequest.QueryData["trackId"].ToString();
             string albumId = httpRequest.QueryData["albumId"].ToString();
+            string trackId = httpRequest.QueryData["trackId"].ToString();
 
             using (var context = new RunesDbContext())
             {
@@ -82,8 +82,8 @@ namespace IRunes.App.Controllers
                     return this.Redirect($"/Albums/Details?id={albumId}");
                 }
 
-                this.ViewData["AlbumsId"] = albumId;
-                this.ViewData["Track"] = trackFromDb.ToHtmlDetails();
+                this.ViewData["AlbumId"] = albumId;
+                this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
                 return this.View();
             }
         }

@@ -23,16 +23,16 @@ namespace IRunes.App.Controllers
             return request.Session.ContainsParameter("username");
         }
 
-        protected void SingIn(IHttpRequest httpRequest, User user)
+        protected void SignIn(IHttpRequest httpRequest, User user)
         {
             httpRequest.Session.AddParameter("id", user.Id);
             httpRequest.Session.AddParameter("username", user.Username);
             httpRequest.Session.AddParameter("email", user.Email);
         }
         
-        protected void SingOut(User user)
+        protected void SingOut(IHttpRequest httpRequest)
         {
-
+            httpRequest.Session.ClearParameters();
         }
 
         protected string ParseTemplate(string viewContent)

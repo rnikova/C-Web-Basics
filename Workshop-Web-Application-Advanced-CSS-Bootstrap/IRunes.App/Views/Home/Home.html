@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>IRunes</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
 </head>
 <body>
     <div>
@@ -30,13 +31,13 @@
         </header>
         <hr style="height: 2px" />
         <main>
-            <div>
-                <h1>Welcome, <span>@Model.Username</span></h1>
-                <hr style="height: 2px" />
+            <div class="jumbotron bg-success text-white">
+                <h1>Welcome, <span class="text-warning">@Model.Username</span></h1>
+                <hr class="bg-white" style="height: 2px" />
                 <h2>IRunes wishes you a fun experience.</h2>
             </div>
         </main>
-        <hr style="height: 2px" />
+        <hr class="bg-success" style="height: 2px" />
         <footer>
             <h5>CopyRight &copy; Sanity Design Studios. All rights reserved.</h5>
         </footer>
