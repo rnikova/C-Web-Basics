@@ -4,9 +4,6 @@ using SIS.HTTP.Common;
 using SIS.HTTP.Cookies;
 using SIS.HTTP.Headers;
 using SIS.HTTP.Extensions;
-using SIS.HTTP.Headers.Contracts;
-using SIS.HTTP.Responses.Contracts;
-using SIS.HTTP.Cookies.Contracts;
 
 namespace SIS.HTTP.Responses
 {

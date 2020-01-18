@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SIS.HTTP.Common;
-using SIS.HTTP.Headers.Contracts;
 using System.Collections.Generic;
 
 namespace SIS.HTTP.Headers

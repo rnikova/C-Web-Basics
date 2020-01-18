@@ -2,8 +2,8 @@
 using SIS.HTTP.Enums;
 using SIS.HTTP.Common;
 using System.Collections.Generic;
-using SIS.HTTP.Requests.Contracts;
-using SIS.HTTP.Responses.Contracts;
+using SIS.HTTP.Requests;
+using SIS.HTTP.Responses;
 using SIS.WebServer.Routing.Contracts;
 
 namespace SIS.WebServer.Routing

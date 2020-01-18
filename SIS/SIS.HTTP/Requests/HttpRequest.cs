@@ -5,11 +5,8 @@ using SIS.HTTP.Common;
 using SIS.HTTP.Cookies;
 using SIS.HTTP.Headers;
 using SIS.HTTP.Exceptions;
-using SIS.HTTP.Cookies.Contracts;
-using SIS.HTTP.Headers.Contracts;
 using System.Collections.Generic;
-using SIS.HTTP.Requests.Contracts;
-using SIS.HTTP.Sessions.Contracts;
+using SIS.HTTP.Sessions;
 
 namespace SIS.HTTP.Requests
 {

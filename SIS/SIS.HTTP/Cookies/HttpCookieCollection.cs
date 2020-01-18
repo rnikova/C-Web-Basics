@@ -1,5 +1,4 @@
 ﻿using SIS.HTTP.Common;
-using SIS.HTTP.Cookies.Contracts;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;

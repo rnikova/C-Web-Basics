@@ -1,8 +1,7 @@
 ﻿using Demo.Data;
 using Demo.Models;
-using SIS.HTTP.Requests.Contracts;
+using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
-using SIS.HTTP.Responses.Contracts;
 using System.Linq;
 
 namespace Demo.App.Controllers
