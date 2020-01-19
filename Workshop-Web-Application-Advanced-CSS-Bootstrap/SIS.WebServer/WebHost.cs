@@ -1,6 +1,7 @@
 ﻿using SIS.HTTP.Enums;
 using SIS.HTTP.Responses;
-using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.Action;
+using SIS.MvcFramework.Attributes.Http;
 using SIS.WebServer;
 using SIS.WebServer.Routing;
 using System;
@@ -35,10 +36,11 @@ namespace SIS.MvcFramework
             foreach (var controller in controllers)
             {
                 var actions = controller
-                    .GetMethods(BindingFlags.Public 
-                        | BindingFlags.DeclaredOnly 
+                    .GetMethods(BindingFlags.DeclaredOnly
+                        | BindingFlags.Public
                         | BindingFlags.Instance)
-                    .Where(x => !x.IsSpecialName && x.DeclaringType == controller);
+                    .Where(x => !x.IsSpecialName && x.DeclaringType == controller)
+                    .Where(x => x.GetCustomAttributes().All(a => a.GetType() != typeof(NonActionAttribute)));
 
                 foreach (var action in actions)
                 {
@@ -46,8 +48,9 @@ namespace SIS.MvcFramework
                     var attribute = action
                         .GetCustomAttributes()
                         .Where(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute)))
-                        .LastOrDefault() 
+                        .LastOrDefault()
                         as BaseHttpAttribute;
+
                     var httpMethod = HttpRequestMethod.Get;
 
                     if (attribute != null)

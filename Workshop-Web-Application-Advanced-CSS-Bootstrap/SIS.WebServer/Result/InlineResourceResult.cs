@@ -1,10 +1,10 @@
 ﻿using SIS.HTTP.Enums;
 using SIS.HTTP.Headers;
-using SIS.HTTP.Responses;
+using SIS.MvcFramework.Result;
 
 namespace SIS.WebServer.Result
 {
-    public class InlineResourceResult : HttpResponse
+    public class InlineResourceResult : ActionResult
     {
         public InlineResourceResult(byte[] content, HttpResponseStatusCode responseStatusCode)
             : base(responseStatusCode)

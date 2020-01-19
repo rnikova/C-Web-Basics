@@ -1,7 +1,7 @@
 ﻿using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.MvcFramework;
-using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.Http;
 
 namespace IRunes.App.Controllers
 {
