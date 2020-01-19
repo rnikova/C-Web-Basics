@@ -3,6 +3,7 @@ using IRunes.Models;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.MvcFramework;
+using SIS.MvcFramework.Attributes;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -14,7 +15,7 @@ namespace IRunes.App.Controllers
     {
         private string HashPassword(string password)
         {
-            using(SHA256 sha256hash = SHA256.Create())
+            using (SHA256 sha256hash = SHA256.Create())
             {
                 return Encoding.UTF8.GetString(sha256hash.ComputeHash(Encoding.UTF8.GetBytes(password)));
             }
@@ -24,19 +25,20 @@ namespace IRunes.App.Controllers
         {
             return this.View();
         }
-        
+
+        [HttpPost(ActionName = "Login")]
         public IHttpResponse LoginConfirm(IHttpRequest httpRequest)
         {
-            using(var context = new RunesDbContext())
+            using (var context = new RunesDbContext())
             {
                 string username = ((ISet<string>)httpRequest.FormData["username"]).FirstOrDefault();
                 string password = ((ISet<string>)httpRequest.FormData["password"]).FirstOrDefault();
 
                 User userFromDb = context.Users
-                    .FirstOrDefault(user => 
-                    (user.Username == username 
-                    || user.Email == username) 
-                    && user.Password ==  this.HashPassword(password));
+                    .FirstOrDefault(user =>
+                    (user.Username == username
+                    || user.Email == username)
+                    && user.Password == this.HashPassword(password));
 
                 if (userFromDb == null)
                 {
@@ -48,12 +50,13 @@ namespace IRunes.App.Controllers
 
             return this.Redirect("/");
         }
-        
+
         public IHttpResponse Register(IHttpRequest request)
         {
             return this.View();
         }
-        
+
+        [HttpPost(ActionName = "Register")]
         public IHttpResponse RegisterConfirm(IHttpRequest httpRequest)
         {
             using (var context = new RunesDbContext())
@@ -81,7 +84,7 @@ namespace IRunes.App.Controllers
 
             return this.Redirect("/Users/Login");
         }
-        
+
         public IHttpResponse Logout(IHttpRequest httpRequest)
         {
             this.SingOut(httpRequest);

@@ -10,7 +10,7 @@ namespace IRunes.App
 {
     public class StartUp : IMvcApplication
     {
-        public void Configure(ServerRoutingTable serverRoutingTable)
+        public void Configure(IServerRoutingTable serverRoutingTable)
         {
             using (var context = new RunesDbContext())
             {

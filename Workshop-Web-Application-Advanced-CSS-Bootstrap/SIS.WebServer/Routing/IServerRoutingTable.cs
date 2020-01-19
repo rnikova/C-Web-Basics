@@ -3,7 +3,7 @@ using SIS.HTTP.Enums;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 
-namespace SIS.WebServer.Routing.Contracts
+namespace SIS.WebServer.Routing
 {
     public interface IServerRoutingTable
     {
