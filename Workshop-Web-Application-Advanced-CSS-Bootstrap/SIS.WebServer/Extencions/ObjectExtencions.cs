@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -18,7 +19,10 @@ namespace SIS.MvcFramework.Extencions
 
         public static string ToJson(this object obj)
         {
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
         }
     }
 }

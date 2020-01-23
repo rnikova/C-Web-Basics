@@ -71,6 +71,7 @@ namespace SIS.MvcFramework
                     serverRoutingTable.Add(httpMethod, path, request =>
                     {
                         var controllerInstance = Activator.CreateInstance(controller);
+                        ((Controller)controllerInstance).Request = request;
                         var responce = action.Invoke(controllerInstance, new[] { request }) as IHttpResponse;
 
                         return responce;

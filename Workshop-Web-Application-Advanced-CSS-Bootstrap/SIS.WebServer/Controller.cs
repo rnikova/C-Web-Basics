@@ -1,12 +1,11 @@
 ﻿using SIS.HTTP.Enums;
 using SIS.HTTP.Requests;
 using SIS.MvcFramework.Extencions;
+using SIS.MvcFramework.Identity;
 using SIS.MvcFramework.Result;
 using SIS.WebServer.Result;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
-using System.Xml.Serialization;
 
 namespace SIS.MvcFramework
 {
@@ -19,21 +18,28 @@ namespace SIS.MvcFramework
             this.ViewData = new Dictionary<string, object>();
         }
 
-        protected bool IsLoggedIn(IHttpRequest  request)
+        public Principal User => (Principal) this.Request.Session.GetParameter("principal");
+
+        public IHttpRequest Request { get; set; }
+
+        protected bool IsLoggedIn()
         {
-            return request.Session.ContainsParameter("username");
+            return this.Request.Session.ContainsParameter("principal");
         }
 
-        protected void SignIn(IHttpRequest httpRequest, string id, string username, string email)
+        protected void SignIn(string id, string username, string email)
         {
-            httpRequest.Session.AddParameter("id", id);
-            httpRequest.Session.AddParameter("username", username);
-            httpRequest.Session.AddParameter("email", email);
+            this.Request.Session.AddParameter("pricipal", new Principal
+            {
+                Id = id,
+                Username = username,
+                Email = email
+            });
         }
         
-        protected void SingOut(IHttpRequest httpRequest)
+        protected void SingOut()
         {
-            httpRequest.Session.ClearParameters();
+            this.Request.Session.ClearParameters();
         }
 
         protected string ParseTemplate(string viewContent)
