@@ -2,6 +2,7 @@
 using SIS.HTTP.Responses;
 using SIS.MvcFramework.Attributes.Action;
 using SIS.MvcFramework.Attributes.Http;
+using SIS.MvcFramework.Attributes.Security;
 using SIS.WebServer;
 using SIS.WebServer.Routing;
 using System;
@@ -72,6 +73,15 @@ namespace SIS.MvcFramework
                     {
                         var controllerInstance = Activator.CreateInstance(controller);
                         ((Controller)controllerInstance).Request = request;
+                        var controllerPrincipal = ((Controller)controllerInstance).User;
+                        var authorizeAttribute = action.GetCustomAttributes()
+                        .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute)) as AuthorizeAttribute;
+
+                        if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrincipal))
+                        {
+                            return new HttpResponse(HttpResponseStatusCode.Forbidden);
+                        }
+
                         var responce = action.Invoke(controllerInstance, new[] { request }) as IHttpResponse;
 
                         return responce;

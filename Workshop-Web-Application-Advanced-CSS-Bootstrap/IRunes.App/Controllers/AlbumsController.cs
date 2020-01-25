@@ -1,38 +1,44 @@
-﻿using System.Linq;
-using IRunes.Data;
+﻿using IRunes.Data;
+using System.Linq;
 using IRunes.Models;
+using IRunes.Services;
 using SIS.MvcFramework;
 using IRunes.App.Extensions;
 using SIS.MvcFramework.Result;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Security;
+using IRunes.App.ViewModels;
+using SIS.MvcFramework.Mapping;
 
 namespace IRunes.App.Controllers
 {
     public class AlbumsController : Controller
     {
+        private readonly IAlbumService albumService;
+
+        public AlbumsController(IAlbumService albumService)
+        {
+            this.albumService = albumService;
+        }
+
         [Authorize("user")]
         public ActionResult All()
         {
-            using (var context = new RunesDbContext())
+            ICollection<Album> allAlbums = this.albumService.GetAllAlbums();
+
+            if (allAlbums.Count == 0)
             {
-                ICollection<Album> allAlbums = context.Albums.ToList();
-
-                if (allAlbums.Count == 0)
-                {
-                    this.ViewData["Albums"] = "There are currently no albums.";
-                }
-                else
-                {
-                    this.ViewData["Albums"] =
-                        string.Join(string.Empty,
-                        allAlbums.Select(album => album.ToHtmlAll()).ToList());
-                }
-
-                return this.View();
+                this.ViewData["Albums"] = "There are currently no albums.";
             }
+            else
+            {
+                this.ViewData["Albums"] =
+                    string.Join(string.Empty,
+                    allAlbums.Select(album => album.ToHtmlAll()).ToList());
+            }
+
+            return this.View();
         }
 
         [Authorize]
@@ -45,21 +51,17 @@ namespace IRunes.App.Controllers
         [HttpPost(ActionName = "Create")]
         public ActionResult CreateConfirm()
         {
-            using (var context = new RunesDbContext())
+            string name = ((ISet<string>)this.Request.FormData["name"]).FirstOrDefault();
+            string cover = ((ISet<string>)this.Request.FormData["cover"]).FirstOrDefault();
+
+            Album album = new Album
             {
-                string name = ((ISet<string>)this.Request.FormData["name"]).FirstOrDefault();
-                string cover = ((ISet<string>)this.Request.FormData["cover"]).FirstOrDefault();
+                Name = name,
+                Cover = cover,
+                Price = 0M
+            };
 
-                Album album = new Album
-                {
-                    Name = name,
-                    Cover = cover,
-                    Price = 0M
-                };
-
-                context.Albums.Add(album);
-                context.SaveChanges();
-            }
+            this.albumService.CreateAlbum(album);
 
             return this.Redirect("/Albums/All");
         }
@@ -68,21 +70,18 @@ namespace IRunes.App.Controllers
         public ActionResult Details()
         {
             string albumId = this.Request.QueryData["id"].ToString();
+            Album albumFromDb = this.albumService.GetAlbumById(albumId);
 
-            using (var context = new RunesDbContext())
+            AlbumViewModel albumViewModel = ModelMapper.ProjectTo<AlbumViewModel>(albumFromDb);
+
+            if (albumFromDb == null)
             {
-                Album albumFromDb = context.Albums
-                    .Include(album => album.Tracks)
-                    .SingleOrDefault(album => album.Id == albumId);
-
-                if (albumFromDb == null)
-                {
-                    return this.Redirect("/Albums/All");
-                }
-
-                this.ViewData["Album"] = albumFromDb.ToHtmlDetails();
-                return this.View();
+                return this.Redirect("/Albums/All");
             }
+
+            this.ViewData["Album"] = albumFromDb.ToHtmlDetails();
+            return this.View();
+
         }
     }
 }

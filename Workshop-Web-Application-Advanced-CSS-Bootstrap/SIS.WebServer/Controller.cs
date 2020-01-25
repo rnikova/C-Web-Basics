@@ -18,7 +18,9 @@ namespace SIS.MvcFramework
             this.ViewData = new Dictionary<string, object>();
         }
 
-        public Principal User => (Principal) this.Request.Session.GetParameter("principal");
+        public Principal User => this.Request.Session.ContainsParameter("principal")
+            ? (Principal) this.Request.Session.GetParameter("principal")
+            : null;
 
         public IHttpRequest Request { get; set; }
 
