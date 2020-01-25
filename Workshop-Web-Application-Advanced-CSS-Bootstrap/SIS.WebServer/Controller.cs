@@ -1,10 +1,10 @@
 ﻿using SIS.HTTP.Enums;
 using SIS.HTTP.Requests;
-using SIS.MvcFramework.Extencions;
-using SIS.MvcFramework.Identity;
-using SIS.MvcFramework.Result;
 using SIS.WebServer.Result;
+using SIS.MvcFramework.Result;
+using SIS.MvcFramework.Identity;
 using System.Collections.Generic;
+using SIS.MvcFramework.Extencions;
 using System.Runtime.CompilerServices;
 
 namespace SIS.MvcFramework
@@ -63,7 +63,11 @@ namespace SIS.MvcFramework
 
             viewContent = this.ParseTemplate(viewContent);
 
-            HtmlResult htmlResult = new HtmlResult(viewContent, HttpResponseStatusCode.Ok);
+            string layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
+            layoutContent = this.ParseTemplate(layoutContent);
+            layoutContent = layoutContent.Replace("@RederBody", viewContent);
+
+            HtmlResult htmlResult = new HtmlResult(layoutContent, HttpResponseStatusCode.Ok);
 
             return htmlResult;
         }

@@ -16,7 +16,8 @@ namespace IRunes.App
             {
                 context.Database.EnsureCreated();
             }
-            serverRoutingTable.Add(HttpRequestMethod.Get, "/Info/About", request => new InfoController().About(request));   
+
+           // serverRoutingTable.Add(HttpRequestMethod.Get, "/Info/About", request => new InfoController().About(request));   
         }
 
         public void ConfigureServices()
