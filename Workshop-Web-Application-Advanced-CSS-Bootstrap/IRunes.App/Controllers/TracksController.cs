@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using IRunes.Models;
+using IRunes.Services;
 using SIS.MvcFramework;
 using SIS.HTTP.Requests;
 using IRunes.App.Extensions;
+using IRunes.App.ViewModels;
 using SIS.MvcFramework.Result;
 using System.Collections.Generic;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Security;
-using IRunes.Services;
 
 namespace IRunes.App.Controllers
 {
@@ -70,7 +71,7 @@ namespace IRunes.App.Controllers
 
             this.ViewData["AlbumId"] = albumId;
             this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
-            return this.View();
+            return this.View(new AlbumDetailsViewModel {AlbumId = albumId });
         }
     }
 }
