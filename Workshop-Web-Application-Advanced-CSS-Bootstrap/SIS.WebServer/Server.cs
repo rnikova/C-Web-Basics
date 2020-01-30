@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using SIS.HTTP.Common;
-using SIS.MvcFramework.Routing;
+using SIS.WebServer.Routing;
 
-namespace SIS.MvcFramework
+namespace SIS.WebServer
 {
     public class Server
     {
