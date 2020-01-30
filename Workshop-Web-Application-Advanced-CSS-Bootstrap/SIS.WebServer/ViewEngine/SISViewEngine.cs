@@ -54,13 +54,15 @@ namespace AppViewCodeNamespace
         }}
     }}
 }}";
-            var view = this.CompileAndInstance(code);
+            var view = this.CompileAndInstance(code, model?.GetType().Assembly);
             var htmlResult = view?.GetHtml();
             return htmlResult;
         }
 
-        private IView CompileAndInstance(string code)
+        private IView CompileAndInstance(string code, Assembly modelAssembly)
         {
+            modelAssembly = modelAssembly ?? Assembly.GetEntryAssembly();
+
             var compilation = CSharpCompilation.Create("AppViewAssembly")
                 .WithOptions(new CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
