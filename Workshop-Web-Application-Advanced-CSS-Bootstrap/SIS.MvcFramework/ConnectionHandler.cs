@@ -10,11 +10,11 @@ using SIS.HTTP.Enums;
 using SIS.HTTP.Exceptions;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
-using SIS.WebServer.Result;
-using SIS.WebServer.Routing;
-using SIS.WebServer.Sessions;
+using SIS.MvcFramework.Result;
+using SIS.MvcFramework.Routing;
+using SIS.MvcFramework.Sessions;
 
-namespace SIS.WebServer
+namespace SIS.MvcFramework
 {
     public class ConnectionHandler
     {

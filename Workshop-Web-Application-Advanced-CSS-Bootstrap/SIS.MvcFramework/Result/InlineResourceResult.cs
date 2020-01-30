@@ -2,7 +2,7 @@
 using SIS.HTTP.Headers;
 using SIS.MvcFramework.Result;
 
-namespace SIS.WebServer.Result
+namespace SIS.MvcFramework.Result
 {
     public class InlineResourceResult : ActionResult
     {
