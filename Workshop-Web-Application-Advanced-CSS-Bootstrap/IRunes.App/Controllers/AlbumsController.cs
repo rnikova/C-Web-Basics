@@ -27,15 +27,9 @@ namespace IRunes.App.Controllers
         {
             ICollection<Album> allAlbums = this.albumService.GetAllAlbums();
 
-            if (allAlbums.Count == 0)
+            if (allAlbums.Count != 0)
             {
-                this.ViewData["Albums"] = "There are currently no albums.";
-            }
-            else
-            {
-                this.ViewData["Albums"] =
-                    string.Join(string.Empty,
-                    allAlbums.Select(album => album.ToHtmlAll()).ToList());
+                return this.View(allAlbums.Select(album => ModelMapper.ProjectTo<AlbumAllViewModel>(album)).ToList());
             }
 
             return this.View();
@@ -72,7 +66,7 @@ namespace IRunes.App.Controllers
             string albumId = this.Request.QueryData["id"].ToString();
             Album albumFromDb = this.albumService.GetAlbumById(albumId);
 
-            AlbumViewModel albumViewModel = ModelMapper.ProjectTo<AlbumViewModel>(albumFromDb);
+            AlbumDetailsViewModel albumViewModel = ModelMapper.ProjectTo<AlbumDetailsViewModel>(albumFromDb);
 
             if (albumFromDb == null)
             {

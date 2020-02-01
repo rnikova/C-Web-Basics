@@ -71,7 +71,7 @@ namespace IRunes.App.Controllers
 
             this.ViewData["AlbumId"] = albumId;
             this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
-            return this.View(new AlbumDetailsViewModel {AlbumId = albumId });
+            return this.View(new AlbumAllViewModel {AlbumId = albumId });
         }
     }
 }

@@ -3,7 +3,6 @@ using SIS.HTTP.Requests;
 using SIS.WebServer.Result;
 using SIS.MvcFramework.Result;
 using SIS.MvcFramework.Identity;
-using System.Collections.Generic;
 using SIS.MvcFramework.Extencions;
 using SIS.MvcFramework.ViewEngine;
 using System.Runtime.CompilerServices;
@@ -12,12 +11,11 @@ namespace SIS.MvcFramework
 {
     public abstract class Controller
     {
-        private IViewEngine viewEngine = new SISViewEngine();
-        protected Dictionary<string, object> ViewData;
+        private readonly IViewEngine viewEngine;
 
         protected Controller()
         {
-            this.ViewData = new Dictionary<string, object>();
+           this.viewEngine  = new SISViewEngine();
         }
 
         public Principal User => this.Request.Session.ContainsParameter("principal")

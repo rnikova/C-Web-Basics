@@ -26,6 +26,14 @@
     <a class="btn bg-success text-white" href="/Albums/Create">Create Album</a>
     <hr style="height: 2px" />
     <div id="albums">
-        @Model.Albums
+        @if(Model != null)
+        {
+            @foreach(var album in Model)
+            {
+                <h3>
+                    <a href="/Albums/Details?id = @album.Id">@album.Name</a>
+                </h3>
+            }
+        }
     </div>
 </main>
