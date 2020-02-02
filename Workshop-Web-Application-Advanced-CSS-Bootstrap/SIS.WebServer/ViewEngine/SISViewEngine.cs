@@ -7,7 +7,7 @@ using System.Collections;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Text.RegularExpressions;
-
+using SIS.MvcFramework.Identity;
 
 namespace SIS.MvcFramework.ViewEngine
 {
@@ -25,7 +25,7 @@ namespace SIS.MvcFramework.ViewEngine
             return model.GetType().FullName;
         }
 
-        public string GetHtml<T>(string viewContent, T model)
+        public string GetHtml<T>(string viewContent, T model, Principal user = null)
         {
             string csharpHtmlCode = string.Empty;
             csharpHtmlCode = this.GetCSharpCode(csharpHtmlCode);
@@ -34,9 +34,9 @@ using System;
 using System.Net;
 using System.Linq;
 using System.Text;
+using SIS.MvcFramework.Identity;
 using System.Collections.Generic;
 using SIS.MvcFramework.ViewEngine;
-using SIS.MvcFramework.Identity;
 using SIS.MvcFramework.Validation;
 namespace AppViewCodeNamespace
 {{
@@ -55,7 +55,7 @@ namespace AppViewCodeNamespace
     }}
 }}";
             var view = this.CompileAndInstance(code, model?.GetType().Assembly);
-            var htmlResult = view?.GetHtml();
+            var htmlResult = view?.GetHtml(model, user);
             return htmlResult;
         }
 
@@ -64,9 +64,11 @@ namespace AppViewCodeNamespace
             modelAssembly = modelAssembly ?? Assembly.GetEntryAssembly();
 
             var compilation = CSharpCompilation.Create("AppViewAssembly")
-                .WithOptions(new CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary))
+                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-                .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location));
+                .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location))
+                .AddReferences(MetadataReference.CreateFromFile(Assembly.GetEntryAssembly().Location))
+                .AddReferences(MetadataReference.CreateFromFile(modelAssembly.Location));
 
             var netStandartAssembly = Assembly.Load(new AssemblyName("netstandart")).GetReferencedAssemblies();
 

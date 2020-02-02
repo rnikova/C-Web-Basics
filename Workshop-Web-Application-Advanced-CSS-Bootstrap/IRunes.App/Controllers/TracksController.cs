@@ -3,12 +3,12 @@ using IRunes.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
 using SIS.HTTP.Requests;
-using IRunes.App.Extensions;
 using IRunes.App.ViewModels;
 using SIS.MvcFramework.Result;
 using System.Collections.Generic;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Security;
+using SIS.MvcFramework.Mapping;
 
 namespace IRunes.App.Controllers
 {
@@ -28,8 +28,7 @@ namespace IRunes.App.Controllers
         {
             string albumId = httpRequest.QueryData["albumId"].ToString();
 
-            this.ViewData["AlbumId"] = albumId;
-            return this.View();
+            return this.View(new TrackCreateViewModel { AlbumId = albumId });
         }
 
         [Authorize]
@@ -69,9 +68,10 @@ namespace IRunes.App.Controllers
                 return this.Redirect($"/Albums/Details?id={albumId}");
             }
 
-            this.ViewData["AlbumId"] = albumId;
-            this.ViewData["Track"] = trackFromDb.ToHtmlDetails(albumId);
-            return this.View(new AlbumAllViewModel {AlbumId = albumId });
+            TrackDetailsViewModel trackDetailsViewModel = ModelMapper.ProjectTo<TrackDetailsViewModel>(trackFromDb);
+            trackDetailsViewModel.AlbumId = albumId;
+
+            return this.View(trackDetailsViewModel);
         }
     }
 }

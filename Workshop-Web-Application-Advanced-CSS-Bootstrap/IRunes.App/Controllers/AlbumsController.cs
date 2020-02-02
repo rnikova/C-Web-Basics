@@ -1,9 +1,7 @@
-﻿using IRunes.Data;
-using System.Linq;
+﻿using System.Linq;
 using IRunes.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
-using IRunes.App.Extensions;
 using SIS.MvcFramework.Result;
 using System.Collections.Generic;
 using SIS.MvcFramework.Attributes.Http;
@@ -73,8 +71,7 @@ namespace IRunes.App.Controllers
                 return this.Redirect("/Albums/All");
             }
 
-            this.ViewData["Album"] = albumFromDb.ToHtmlDetails();
-            return this.View();
+            return this.View(new List<AlbumAllViewModel>());
 
         }
     }
