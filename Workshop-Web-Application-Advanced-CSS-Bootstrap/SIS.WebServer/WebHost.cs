@@ -11,6 +11,8 @@ using SIS.MvcFramework.Attributes.Action;
 using SIS.MvcFramework.Attributes.Security;
 using SIS.MvcFramework.DependencyContainer;
 using SIS.MvcFramework.Logging;
+using SIS.HTTP.Requests;
+using System.Collections.Generic;
 
 namespace SIS.MvcFramework
 {
@@ -32,8 +34,8 @@ namespace SIS.MvcFramework
             server.Run();
         }
 
-        private static void AutoRegisterRoutes(IMvcApplication application, 
-            IServerRoutingTable serverRoutingTable, 
+        private static void AutoRegisterRoutes(IMvcApplication application,
+            IServerRoutingTable serverRoutingTable,
             DependencyContainer.IServiceProvider serviceProvider)
         {
             var controllers = application
@@ -77,27 +79,54 @@ namespace SIS.MvcFramework
                         path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
                     }
 
-                    serverRoutingTable.Add(httpMethod, path, request =>
-                    {
-                        var controllerInstance = serviceProvider.CreateInstance(controllerType);
-                        ((Controller)controllerInstance).Request = request;
-                        var controllerPrincipal = ((Controller)controllerInstance).User;
-                        var authorizeAttribute = action.GetCustomAttributes()
-                        .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute)) as AuthorizeAttribute;
-
-                        if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrincipal))
-                        {
-                            return new HttpResponse(HttpResponseStatusCode.Forbidden);
-                        }
-
-                        var responce = action.Invoke(controllerInstance, new[] { request }) as IHttpResponse;
-
-                        return responce;
-                    });
+                    serverRoutingTable.Add(httpMethod, path, (request) => ProccessRequest(serviceProvider, controllerType, action, request));
 
                     Console.WriteLine(httpMethod + " " + path);
                 }
             }
+        }
+
+        private static IHttpResponse ProccessRequest(
+            DependencyContainer.IServiceProvider serviceProvider,
+            Type controllerType,
+            MethodInfo action,
+            IHttpRequest request)
+        {
+            var controllerInstance = serviceProvider.CreateInstance(controllerType);
+            ((Controller)controllerInstance).Request = request;
+            var controllerPrincipal = ((Controller)controllerInstance).User;
+            var authorizeAttribute = action.GetCustomAttributes()
+            .LastOrDefault(a => a.GetType() == typeof(AuthorizeAttribute)) as AuthorizeAttribute;
+
+            if (authorizeAttribute != null && !authorizeAttribute.IsInAuthority(controllerPrincipal))
+            {
+                return new HttpResponse(HttpResponseStatusCode.Forbidden);
+            }
+
+            var parameters = action.GetParameters();
+            var parameterValues = new List<object>();
+
+            foreach (var parameter in parameters)
+            {
+                var parameterName = parameter.Name.ToLower();
+                object parameterValue = null;
+
+                if (request.QueryData.Any(x => x.Key.ToLower() == parameterName))
+                {
+                    parameterValue = request.QueryData.FirstOrDefault(x => x.Key.ToLower() == parameterName);
+                }
+                
+                if (request.FormData.Any(x => x.Key.ToLower() == parameterName))
+                {
+                    parameterValue = request.FormData.FirstOrDefault(x => x.Key.ToLower() == parameterName);
+                }
+
+                //Convert.ChangeType
+            }
+
+            var responce = action.Invoke(controllerInstance, parameterValues.ToArray()) as IHttpResponse;
+
+            return responce;
         }
     }
 }

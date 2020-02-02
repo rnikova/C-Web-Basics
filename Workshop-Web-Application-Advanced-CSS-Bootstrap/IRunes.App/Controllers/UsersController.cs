@@ -4,7 +4,6 @@ using IRunes.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Result;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Action;
@@ -37,8 +36,8 @@ namespace IRunes.App.Controllers
         [HttpPost(ActionName = "Login")]
         public ActionResult LoginConfirm()
         {
-            string username = ((ISet<string>)this.Request.FormData["username"]).FirstOrDefault();
-            string password = ((ISet<string>)this.Request.FormData["password"]).FirstOrDefault();
+            string username = this.Request.FormData["username"].FirstOrDefault();
+            string password = this.Request.FormData["password"].FirstOrDefault();
 
             User userFromDb = this.userService.GetUserByUsernameAndPassword(username, this.HashPassword(password));
 
@@ -61,10 +60,10 @@ namespace IRunes.App.Controllers
         public ActionResult RegisterConfirm()
         {
 
-            string username = ((ISet<string>)this.Request.FormData["username"]).FirstOrDefault();
-            string password = ((ISet<string>)this.Request.FormData["password"]).FirstOrDefault();
-            string confirmPassword = ((ISet<string>)this.Request.FormData["confirmPassword"]).FirstOrDefault();
-            string email = ((ISet<string>)this.Request.FormData["email"]).FirstOrDefault();
+            string username = (this.Request.FormData["username"]).FirstOrDefault();
+            string password = (this.Request.FormData["password"]).FirstOrDefault();
+            string confirmPassword = (this.Request.FormData["confirmPassword"]).FirstOrDefault();
+            string email = (this.Request.FormData["email"]).FirstOrDefault();
 
             if (password != confirmPassword)
             {
