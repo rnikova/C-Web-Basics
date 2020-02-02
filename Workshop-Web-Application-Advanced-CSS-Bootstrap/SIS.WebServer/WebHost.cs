@@ -1,14 +1,16 @@
-﻿using SIS.HTTP.Enums;
-using SIS.HTTP.Responses;
-using SIS.MvcFramework.Attributes.Action;
-using SIS.MvcFramework.Attributes.Http;
-using SIS.MvcFramework.Attributes.Security;
-using SIS.MvcFramework.Sessions;
-using SIS.WebServer;
-using SIS.WebServer.Routing;
-using System;
+﻿using System;
 using System.Linq;
+using SIS.WebServer;
+using SIS.HTTP.Enums;
 using System.Reflection;
+using SIS.HTTP.Responses;
+using SIS.WebServer.Routing;
+using SIS.MvcFramework.Sessions;
+using SIS.MvcFramework.Attributes.Http;
+using SIS.MvcFramework.Attributes.Action;
+using SIS.MvcFramework.Attributes.Security;
+using SIS.MvcFramework.DependencyContainer;
+using SIS.MvcFramework.Logging;
 
 namespace SIS.MvcFramework
 {
@@ -18,17 +20,21 @@ namespace SIS.MvcFramework
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
             IHttpSessionStorage httpSessionStorage = new HttpSessionStorage();
+            DependencyContainer.IServiceProvider serviceProvider = new ServiceProvider();
+            serviceProvider.Add<ILogger, ConsoleLogger>();
 
-            AutoRegisterRoutes(application, serverRoutingTable);
+            AutoRegisterRoutes(application, serverRoutingTable, serviceProvider);
 
-            application.ConfigureServices();
+            application.ConfigureServices(serviceProvider);
             application.Configure(serverRoutingTable);
 
             Server server = new Server(8000, serverRoutingTable, httpSessionStorage);
             server.Run();
         }
 
-        private static void AutoRegisterRoutes(IMvcApplication application, IServerRoutingTable serverRoutingTable)
+        private static void AutoRegisterRoutes(IMvcApplication application, 
+            IServerRoutingTable serverRoutingTable, 
+            DependencyContainer.IServiceProvider serviceProvider)
         {
             var controllers = application
                 .GetType()
@@ -36,18 +42,18 @@ namespace SIS.MvcFramework
                 .GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && typeof(Controller).IsAssignableFrom(type));
 
-            foreach (var controller in controllers)
+            foreach (var controllerType in controllers)
             {
-                var actions = controller
+                var actions = controllerType
                     .GetMethods(BindingFlags.DeclaredOnly
                         | BindingFlags.Public
                         | BindingFlags.Instance)
-                    .Where(x => !x.IsSpecialName && x.DeclaringType == controller)
+                    .Where(x => !x.IsSpecialName && x.DeclaringType == controllerType)
                     .Where(x => x.GetCustomAttributes().All(a => a.GetType() != typeof(NonActionAttribute)));
 
                 foreach (var action in actions)
                 {
-                    var path = $"/{controller.Name.Replace("Controller", string.Empty)}/{action.Name}";
+                    var path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{action.Name}";
                     var attribute = action
                         .GetCustomAttributes()
                         .Where(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute)))
@@ -68,12 +74,12 @@ namespace SIS.MvcFramework
 
                     if (attribute?.ActionName != null)
                     {
-                        path = $"/{controller.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
+                        path = $"/{controllerType.Name.Replace("Controller", string.Empty)}/{attribute.ActionName}";
                     }
 
                     serverRoutingTable.Add(httpMethod, path, request =>
                     {
-                        var controllerInstance = Activator.CreateInstance(controller);
+                        var controllerInstance = serviceProvider.CreateInstance(controllerType);
                         ((Controller)controllerInstance).Request = request;
                         var controllerPrincipal = ((Controller)controllerInstance).User;
                         var authorizeAttribute = action.GetCustomAttributes()

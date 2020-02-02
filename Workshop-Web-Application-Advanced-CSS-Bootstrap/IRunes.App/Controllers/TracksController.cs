@@ -5,10 +5,10 @@ using SIS.MvcFramework;
 using SIS.HTTP.Requests;
 using IRunes.App.ViewModels;
 using SIS.MvcFramework.Result;
+using SIS.MvcFramework.Mapping;
 using System.Collections.Generic;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Security;
-using SIS.MvcFramework.Mapping;
 
 namespace IRunes.App.Controllers
 {
@@ -17,10 +17,10 @@ namespace IRunes.App.Controllers
         private readonly ITrackService trackService;
         private readonly IAlbumService albumService;
 
-        public TracksController()
+        public TracksController(ITrackService trackService, IAlbumService albumService)
         {
-            this.trackService = new TrackService();
-            this.albumService = new AlbumService();
+            this.trackService = trackService;
+            this.albumService = albumService;
         }
 
         [Authorize]

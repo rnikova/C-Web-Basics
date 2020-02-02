@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using System.Text;
-using IRunes.Data;
 using IRunes.Models;
+using IRunes.Services;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Result;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Action;
-using IRunes.Services;
 
 namespace IRunes.App.Controllers
 {
@@ -16,9 +15,9 @@ namespace IRunes.App.Controllers
     {
         private readonly IUserService userService;
 
-        public UsersController()
+        public UsersController(IUserService userService)
         {
-            this.userService = new UserService();
+            this.userService = userService;
         }
 
         [NonAction]

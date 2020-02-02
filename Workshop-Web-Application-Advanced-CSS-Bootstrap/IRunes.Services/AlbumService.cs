@@ -1,8 +1,8 @@
 ﻿using IRunes.Data;
-using IRunes.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
+using IRunes.Models;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace IRunes.Services
 {
@@ -10,9 +10,9 @@ namespace IRunes.Services
     {
         private readonly RunesDbContext context;
 
-        public AlbumService()
+        public AlbumService(RunesDbContext runesDbContext)
         {
-            this.context = new RunesDbContext();
+            this.context = runesDbContext;
         }
 
         public Album CreateAlbum(Album album)
