@@ -3,16 +3,16 @@ using System.Linq;
 using SIS.WebServer;
 using SIS.HTTP.Enums;
 using System.Reflection;
+using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.WebServer.Routing;
+using SIS.MvcFramework.Logging;
 using SIS.MvcFramework.Sessions;
+using System.Collections.Generic;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Action;
 using SIS.MvcFramework.Attributes.Security;
 using SIS.MvcFramework.DependencyContainer;
-using SIS.MvcFramework.Logging;
-using SIS.HTTP.Requests;
-using System.Collections.Generic;
 
 namespace SIS.MvcFramework
 {
@@ -108,25 +108,62 @@ namespace SIS.MvcFramework
 
             foreach (var parameter in parameters)
             {
-                var parameterName = parameter.Name.ToLower();
-                object parameterValue = null;
+                ISet<string> httpDataValue = TryGetHttpParameter(request, parameter.Name);
 
-                if (request.QueryData.Any(x => x.Key.ToLower() == parameterName))
+                //if (parameter.ParameterType.GetInterfaces().Any(x =>
+                //        x.IsGenericType
+                //        && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+                //{
+                //    var collection = httpDataValue.Select(x => Convert.ChangeType(x, parameter.ParameterType.GenericTypeArguments.First()));
+                //    parameterValues.Add(collection);
+                //    continue;
+                //}
+
+                try
                 {
-                    parameterValue = request.QueryData.FirstOrDefault(x => x.Key.ToLower() == parameterName);
+                    var httpStringValue = httpDataValue.FirstOrDefault();
+                    var parameterValue = Convert.ChangeType(httpStringValue, parameter.ParameterType);
+                    parameterValues.Add(parameterValue);
                 }
-                
-                if (request.FormData.Any(x => x.Key.ToLower() == parameterName))
+                catch 
                 {
-                    parameterValue = request.FormData.FirstOrDefault(x => x.Key.ToLower() == parameterName);
+                    var paramaterValue = Activator.CreateInstance(parameter.ParameterType);
+                    var properties = parameter.ParameterType.GetProperties();
+
+                    foreach (var property in properties)
+                    {
+                        ISet<string> propertyHttpDataValue = TryGetHttpParameter(request, property.Name);
+                        var firstValue = propertyHttpDataValue.First();
+                        var propertyValue = Convert.ChangeType(firstValue, property.PropertyType);
+
+                        property.SetMethod.Invoke(paramaterValue, new object[] { propertyValue });
+                    }
+
+                    parameterValues.Add(paramaterValue);
                 }
 
-                //Convert.ChangeType
             }
 
             var responce = action.Invoke(controllerInstance, parameterValues.ToArray()) as IHttpResponse;
 
             return responce;
+        }
+
+        private static ISet<string> TryGetHttpParameter(IHttpRequest request, string parameterName)
+        {
+            parameterName = parameterName?.ToLower();
+            ISet<string> httpDataValue = null;
+
+            if (request.QueryData.Any(x => x.Key.ToLower() == parameterName))
+            {
+                httpDataValue = request.QueryData.FirstOrDefault(x => x.Key.ToLower() == parameterName).Value;
+            }
+            else if (request.FormData.Any(x => x.Key.ToLower() == parameterName))
+            {
+                httpDataValue = request.FormData.FirstOrDefault(x => x.Key.ToLower() == parameterName).Value;
+            }
+
+            return httpDataValue;
         }
     }
 }

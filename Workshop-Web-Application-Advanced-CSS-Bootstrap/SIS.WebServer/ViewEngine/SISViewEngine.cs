@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Text.RegularExpressions;
 using SIS.MvcFramework.Identity;
+using System.Net;
 
 namespace SIS.MvcFramework.ViewEngine
 {
@@ -85,12 +86,17 @@ namespace AppViewCodeNamespace
 
                 if (!compilationResult.Success)
                 {
-                    foreach (var error in compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error))
+                    var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
+                    var errorsHtml = new StringBuilder();
+                    errorsHtml.AppendLine($"<h1>{errors.Count()} errors:</h1>");
+
+                    foreach (var error in errors)
                     {
-                        Console.WriteLine(error.GetMessage());
+                        errorsHtml.AppendLine($"<div>{error.Location} => {error.GetMessage()}</div>");
                     }
 
-                    return null;
+                    errorsHtml.AppendLine($"<pre>{WebUtility.HtmlEncode(code)}</pre>");
+                    return new ErrorView(errorsHtml.ToString());
                 }
 
                 memoryStream.Seek(0, SeekOrigin.Begin);

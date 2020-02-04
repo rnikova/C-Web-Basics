@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text;
+﻿using System.Text;
 using IRunes.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
@@ -33,12 +32,9 @@ namespace IRunes.App.Controllers
             return this.View();
         }
 
-        [HttpPost(ActionName = "Login")]
-        public ActionResult LoginConfirm()
+        [HttpPost]
+        public ActionResult Login(string username, string password)
         {
-            string username = this.Request.FormData["username"].FirstOrDefault();
-            string password = this.Request.FormData["password"].FirstOrDefault();
-
             User userFromDb = this.userService.GetUserByUsernameAndPassword(username, this.HashPassword(password));
 
             if (userFromDb == null)
@@ -56,15 +52,9 @@ namespace IRunes.App.Controllers
             return this.View();
         }
 
-        [HttpPost(ActionName = "Register")]
-        public ActionResult RegisterConfirm()
+        [HttpPost]
+        public ActionResult Register(string username, string password, string confirmPassword, string email)
         {
-
-            string username = (this.Request.FormData["username"]).FirstOrDefault();
-            string password = (this.Request.FormData["password"]).FirstOrDefault();
-            string confirmPassword = (this.Request.FormData["confirmPassword"]).FirstOrDefault();
-            string email = (this.Request.FormData["email"]).FirstOrDefault();
-
             if (password != confirmPassword)
             {
                 return this.Redirect("/Users/Register");
