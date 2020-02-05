@@ -110,14 +110,14 @@ namespace SIS.MvcFramework
             {
                 ISet<string> httpDataValue = TryGetHttpParameter(request, parameter.Name);
 
-                //if (parameter.ParameterType.GetInterfaces().Any(x =>
-                //        x.IsGenericType
-                //        && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
-                //{
-                //    var collection = httpDataValue.Select(x => Convert.ChangeType(x, parameter.ParameterType.GenericTypeArguments.First()));
-                //    parameterValues.Add(collection);
-                //    continue;
-                //}
+                if (parameter.ParameterType.GetInterfaces().Any(x =>
+                        x.IsGenericType
+                        && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+                {
+                    var collection = httpDataValue.Select(x => Convert.ChangeType(x, parameter.ParameterType.GenericTypeArguments.First()));
+                    parameterValues.Add(collection);
+                    continue;
+                }
 
                 try
                 {
@@ -133,10 +133,29 @@ namespace SIS.MvcFramework
                     foreach (var property in properties)
                     {
                         ISet<string> propertyHttpDataValue = TryGetHttpParameter(request, property.Name);
-                        var firstValue = propertyHttpDataValue.First();
-                        var propertyValue = Convert.ChangeType(firstValue, property.PropertyType);
 
-                        property.SetMethod.Invoke(paramaterValue, new object[] { propertyValue });
+                        if (property.PropertyType
+                            .GetInterfaces()
+                            .Any(x => x.IsGenericType 
+                                && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) 
+                                && property.PropertyType != typeof(string)))
+                        {
+                            var propertyValue = (IList<string>)Activator.CreateInstance(property.PropertyType);
+
+                            foreach (var parameterElement in propertyHttpDataValue)
+                            {
+                                propertyValue.Add(parameterElement);
+                            }
+
+                            property.SetMethod.Invoke(paramaterValue, new object[] { propertyValue });
+                        }
+                        else
+                        {
+                            var firstValue = propertyHttpDataValue.First();
+                            var propertyValue = Convert.ChangeType(firstValue, property.PropertyType);
+
+                            property.SetMethod.Invoke(paramaterValue, new object[] { propertyValue });
+                        }
                     }
 
                     parameterValues.Add(paramaterValue);
