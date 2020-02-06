@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.Text.RegularExpressions;
 using SIS.MvcFramework.Identity;
 using System.Net;
+using SIS.MvcFramework.Validation;
 
 namespace SIS.MvcFramework.ViewEngine
 {
@@ -26,7 +27,7 @@ namespace SIS.MvcFramework.ViewEngine
             return model.GetType().FullName;
         }
 
-        public string GetHtml<T>(string viewContent, T model, Principal user = null)
+        public string GetHtml<T>(string viewContent, T model, ModelStateDictionary modelState, Principal user = null)
         {
             string csharpHtmlCode = string.Empty;
             csharpHtmlCode = this.GetCSharpCode(csharpHtmlCode);
@@ -56,7 +57,7 @@ namespace AppViewCodeNamespace
     }}
 }}";
             var view = this.CompileAndInstance(code, model?.GetType().Assembly);
-            var htmlResult = view?.GetHtml(model, user);
+            var htmlResult = view?.GetHtml(model, modelState, user);
             return htmlResult;
         }
 

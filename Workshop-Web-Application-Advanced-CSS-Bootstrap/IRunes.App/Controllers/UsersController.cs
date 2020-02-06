@@ -6,6 +6,7 @@ using SIS.MvcFramework.Result;
 using System.Security.Cryptography;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Action;
+using IRunes.App.ViewModels.Users;
 
 namespace IRunes.App.Controllers
 {
@@ -53,18 +54,23 @@ namespace IRunes.App.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(string username, string password, string confirmPassword, string email)
+        public ActionResult Register(RegisterInputModel model)
         {
-            if (password != confirmPassword)
+            if (!ModelState.IsValid)
+            {
+                return this.Redirect("/Users/Register");
+            }
+
+            if (model.Password != model.ConfirmPassword)
             {
                 return this.Redirect("/Users/Register");
             }
 
             User user = new User
             {
-                Username = username,
-                Password = this.HashPassword(password),
-                Email = email
+                Username = model.Username,
+                Password = this.HashPassword(model.Password),
+                Email = model.Email
             };
 
             this.userService.CreateUser(user);

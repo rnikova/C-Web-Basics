@@ -2,6 +2,7 @@
 using System.IO;
 using SIS.MvcFramework.ViewEngine;
 using System.Collections.Generic;
+using SIS.MvcFramework.Validation;
 
 namespace SIS.MvcFramework.Tests
 {
@@ -25,6 +26,7 @@ namespace SIS.MvcFramework.Tests
                 StringValue = "str",
                 ListValues = new List<string> { "123", "val1", string.Empty },
             },
+            new ModelStateDictionary(),
             new Identity.Principal() { });
 
             Assert.Equal(expectedResult.TrimEnd(), actualResult.TrimEnd());

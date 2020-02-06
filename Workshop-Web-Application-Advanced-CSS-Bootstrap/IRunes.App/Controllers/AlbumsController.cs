@@ -8,6 +8,7 @@ using SIS.MvcFramework.Mapping;
 using System.Collections.Generic;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Security;
+using IRunes.App.ViewModels.Albums;
 
 namespace IRunes.App.Controllers
 {
@@ -41,12 +42,17 @@ namespace IRunes.App.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult Create(string name, string cover)
+        public ActionResult Create(AlbumCreateInputModel model)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.Redirect("/Albums/Create");
+            }
+
             Album album = new Album
             {
-                Name = name,
-                Cover = cover,
+                Name = model.Name,
+                Cover = model.Cover,
                 Price = 0M
             };
 

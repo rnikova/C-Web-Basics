@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using IRunes.Models;
+﻿using IRunes.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
-using SIS.HTTP.Requests;
-using IRunes.App.ViewModels;
 using SIS.MvcFramework.Result;
 using SIS.MvcFramework.Mapping;
+using IRunes.App.ViewModels.Tracks;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Security;
 
@@ -32,6 +30,11 @@ namespace IRunes.App.Controllers
         [HttpPost]
         public ActionResult Create(CreateInputViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return this.Redirect("Tracks/Create?");
+            }
+
             Track trackForDb = new Track
             {
                 Name = model.Name,

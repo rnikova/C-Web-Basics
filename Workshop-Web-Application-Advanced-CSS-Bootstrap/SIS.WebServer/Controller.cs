@@ -6,6 +6,7 @@ using SIS.MvcFramework.Identity;
 using SIS.MvcFramework.Extencions;
 using SIS.MvcFramework.ViewEngine;
 using System.Runtime.CompilerServices;
+using SIS.MvcFramework.Validation;
 
 namespace SIS.MvcFramework
 {
@@ -15,14 +16,17 @@ namespace SIS.MvcFramework
 
         protected Controller()
         {
-           this.viewEngine  = new SISViewEngine();
+            this.viewEngine = new SISViewEngine();
+            this.ModelState = new ModelStateDictionary();
         }
 
         public Principal User => this.Request.Session.ContainsParameter("principal")
-            ? (Principal) this.Request.Session.GetParameter("principal")
+            ? (Principal)this.Request.Session.GetParameter("principal")
             : null;
 
         public IHttpRequest Request { get; set; }
+
+        public ModelStateDictionary ModelState { get; set; }
 
         protected bool IsLoggedIn()
         {
@@ -38,7 +42,7 @@ namespace SIS.MvcFramework
                 Email = email
             });
         }
-        
+
         protected void SingOut()
         {
             this.Request.Session.ClearParameters();
@@ -56,7 +60,7 @@ namespace SIS.MvcFramework
 
         protected ActionResult View([CallerMemberName] string view = null)
         {
-            return this.View < object>(null, view);
+            return this.View<object>(null, view);
         }
 
         protected ActionResult View<T>(T model = null, [CallerMemberName] string view = null)
@@ -67,10 +71,10 @@ namespace SIS.MvcFramework
 
             string viewContent = System.IO.File.ReadAllText("Views/" + controllerName + "/" + viewName + ".html");
 
-            viewContent = this.viewEngine.GetHtml(viewContent, model, this.User);
+            viewContent = this.viewEngine.GetHtml(viewContent, model, this.ModelState, this.User);
 
             string layoutContent = System.IO.File.ReadAllText("Views/_Layout.html");
-            layoutContent = this.viewEngine.GetHtml(layoutContent, model, this.User);
+            layoutContent = this.viewEngine.GetHtml(layoutContent, model, this.ModelState, this.User);
             layoutContent = layoutContent.Replace("@RederBody", viewContent);
 
             HtmlResult htmlResult = new HtmlResult(layoutContent, HttpResponseStatusCode.Ok);
@@ -87,12 +91,12 @@ namespace SIS.MvcFramework
         {
             return new XmlResult(obj.ToXml());
         }
-        
+
         protected ActionResult Json(object obj)
         {
             return new JsonResult(obj.ToJson());
         }
-        
+
         protected ActionResult File(byte[] fileContent)
         {
             return new FileResult(fileContent);

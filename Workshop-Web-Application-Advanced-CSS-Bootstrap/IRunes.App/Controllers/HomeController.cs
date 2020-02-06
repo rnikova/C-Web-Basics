@@ -1,7 +1,7 @@
-﻿using IRunes.App.ViewModels;
-using SIS.MvcFramework;
-using SIS.MvcFramework.Attributes.Http;
+﻿using SIS.MvcFramework;
 using SIS.MvcFramework.Result;
+using IRunes.App.ViewModels.Users;
+using SIS.MvcFramework.Attributes.Http;
 
 namespace IRunes.App.Controllers
 {
