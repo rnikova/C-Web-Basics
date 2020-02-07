@@ -2,13 +2,12 @@
 using IRunes.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
-using IRunes.App.ViewModels;
 using SIS.MvcFramework.Result;
 using SIS.MvcFramework.Mapping;
 using System.Collections.Generic;
+using IRunes.App.ViewModels.Albums;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Security;
-using IRunes.App.ViewModels.Albums;
 
 namespace IRunes.App.Controllers
 {
@@ -22,7 +21,7 @@ namespace IRunes.App.Controllers
         }
 
         [Authorize("user")]
-        public ActionResult All()
+        public IActionResult All()
         {
             ICollection<Album> allAlbums = this.albumService.GetAllAlbums();
 
@@ -35,26 +34,21 @@ namespace IRunes.App.Controllers
         }
 
         [Authorize]
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return this.View();
         }
 
         [Authorize]
         [HttpPost]
-        public ActionResult Create(AlbumCreateInputModel model)
+        public IActionResult Create(AlbumCreateInputModel model)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.Redirect("/Albums/Create");
             }
 
-            Album album = new Album
-            {
-                Name = model.Name,
-                Cover = model.Cover,
-                Price = 0M
-            };
+            Album album = ModelMapper.ProjectTo<Album>(model);
 
             this.albumService.CreateAlbum(album);
 
@@ -62,7 +56,7 @@ namespace IRunes.App.Controllers
         }
 
         [Authorize]
-        public ActionResult Details(string id)
+        public IActionResult Details(string id)
         {
             Album albumFromDb = this.albumService.GetAlbumById(id);
 

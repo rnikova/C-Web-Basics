@@ -21,28 +21,23 @@ namespace IRunes.App.Controllers
         }
 
         [Authorize]
-        public ActionResult Create(string albumId)
+        public IActionResult Create(string albumId)
         {
             return this.View(new TrackCreateViewModel { AlbumId = albumId });
         }
 
         [Authorize]
         [HttpPost]
-        public ActionResult Create(CreateInputViewModel model)
+        public IActionResult Create(TrackCreateInputModel model)
         {
             if (!ModelState.IsValid)
             {
                 return this.Redirect("Tracks/Create?");
             }
 
-            Track trackForDb = new Track
-            {
-                Name = model.Name,
-                Link = model.Link,
-                Price = model.Price
-            };
+            Track track = ModelMapper.ProjectTo<Track>(model);
 
-            if (!this.albumService.AddTrackToAlbum(model.AlbumId, trackForDb))
+            if (!this.albumService.AddTrackToAlbum(model.AlbumId, track))
             {
                 return this.Redirect("Albums/All");
             }
@@ -51,17 +46,22 @@ namespace IRunes.App.Controllers
         }
 
         [Authorize]
-        public ActionResult Details(string albumId, string trackId)
+        public IActionResult Details(TrackDetailsInputModel model)
         {
-            Track trackFromDb = this.trackService.GetTrackById(trackId);
+            if (!ModelState.IsValid)
+            {
+                this.Redirect("Albums/All");
+            }
+
+            Track trackFromDb = this.trackService.GetTrackById(model.TrackId);
 
             if (trackFromDb == null)
             {
-                return this.Redirect($"/Albums/Details?id={albumId}");
+                return this.Redirect($"/Albums/Details?id={model.AlbumId}");
             }
 
             TrackDetailsViewModel trackDetailsViewModel = ModelMapper.ProjectTo<TrackDetailsViewModel>(trackFromDb);
-            trackDetailsViewModel.AlbumId = albumId;
+            trackDetailsViewModel.AlbumId = model.AlbumId;
 
             return this.View(trackDetailsViewModel);
         }

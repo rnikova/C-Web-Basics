@@ -7,7 +7,6 @@ namespace SIS.MvcFramework.Attributes.Validation
     {
         public EmailSisAttribute()
         {
-
         }
 
         public EmailSisAttribute(string errorMessage)

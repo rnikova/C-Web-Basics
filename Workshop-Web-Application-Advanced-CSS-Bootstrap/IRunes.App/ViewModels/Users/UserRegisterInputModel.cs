@@ -2,7 +2,7 @@
 
 namespace IRunes.App.ViewModels.Users
 {
-    public class RegisterInputModel
+    public class UserRegisterInputModel
     {
         private const string UsernameErrorMessage = "Invalid username length! Must be between 5 and 20 symbols!";
 
@@ -17,7 +17,7 @@ namespace IRunes.App.ViewModels.Users
         public string ConfirmPassword { get; set; }
 
         [RequiredSis]
-        [EmailSis("")]
+        [EmailSis]
         public string Email { get; set; }
     }
 }

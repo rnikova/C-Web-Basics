@@ -24,6 +24,6 @@ namespace SIS.MvcFramework
         public void SetState(Controller controller)
         {
             controller.ModelState = this.ModelState;
-        }
+        }            
     }
 }

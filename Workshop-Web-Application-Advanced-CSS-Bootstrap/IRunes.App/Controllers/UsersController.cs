@@ -3,10 +3,10 @@ using IRunes.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Result;
+using IRunes.App.ViewModels.Users;
 using System.Security.Cryptography;
 using SIS.MvcFramework.Attributes.Http;
 using SIS.MvcFramework.Attributes.Action;
-using IRunes.App.ViewModels.Users;
 
 namespace IRunes.App.Controllers
 {
@@ -19,24 +19,15 @@ namespace IRunes.App.Controllers
             this.userService = userService;
         }
 
-        [NonAction]
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256hash = SHA256.Create())
-            {
-                return Encoding.UTF8.GetString(sha256hash.ComputeHash(Encoding.UTF8.GetBytes(password)));
-            }
-        }
-
-        public ActionResult Login()
+        public IActionResult Login()
         {
             return this.View();
         }
 
         [HttpPost]
-        public ActionResult Login(string username, string password)
+        public IActionResult Login(UserLoginInputModel model)
         {
-            User userFromDb = this.userService.GetUserByUsernameAndPassword(username, this.HashPassword(password));
+            User userFromDb = this.userService.GetUserByUsernameAndPassword(model.Username, this.HashPassword(model.Password));
 
             if (userFromDb == null)
             {
@@ -48,13 +39,13 @@ namespace IRunes.App.Controllers
             return this.Redirect("/");
         }
 
-        public ActionResult Register()
+        public IActionResult Register()
         {
             return this.View();
         }
 
         [HttpPost]
-        public ActionResult Register(RegisterInputModel model)
+        public IActionResult Register(UserRegisterInputModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -78,11 +69,20 @@ namespace IRunes.App.Controllers
             return this.Redirect("/Users/Login");
         }
 
-        public ActionResult Logout()
+        public IActionResult Logout()
         {
             this.SingOut();
 
             return this.Redirect("/");
+        }
+
+        [NonAction]
+        private string HashPassword(string password)
+        {
+            using (SHA256 sha256hash = SHA256.Create())
+            {
+                return Encoding.UTF8.GetString(sha256hash.ComputeHash(Encoding.UTF8.GetBytes(password)));
+            }
         }
     }
 }
