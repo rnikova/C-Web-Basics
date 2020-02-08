@@ -8,11 +8,11 @@ namespace Panda.Data.Models
     {
         public User()
         {
-            this.Id = new Guid().ToString();
+            this.Id = Guid.NewGuid().ToString();
             this.Packages = new HashSet<Package>();
             this.Receipts = new HashSet<Receipt>();
         }
-        
+
         public string Id { get; set; }
 
         [Required]

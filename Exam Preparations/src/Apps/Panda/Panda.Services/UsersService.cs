@@ -1,5 +1,6 @@
 ﻿using Panda.Data;
 using Panda.Data.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -28,6 +29,13 @@ namespace Panda.Services
             this.dbContext.SaveChanges();
 
             return user.Id;
+        }
+
+        public IEnumerable<string> GetUsernames()
+        {
+            var usernames = this.dbContext.Users.Select(x => x.Username).ToList();
+
+            return usernames;
         }
 
         public User GetUserOrNull(string username, string password)
