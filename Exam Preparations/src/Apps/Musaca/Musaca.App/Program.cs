@@ -1,6 +1,6 @@
 ﻿using SIS.MvcFramework;
 
-namespace Panda.Web
+namespace Musaca.App
 {
     public class Program
     {
