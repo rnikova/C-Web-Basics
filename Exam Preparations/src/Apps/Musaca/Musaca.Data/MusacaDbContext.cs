@@ -11,6 +11,8 @@ namespace Musaca.Data
 
         public DbSet<Order> Orders {get; set;}
 
+        public DbSet<OrderProduct> OrdersProducts { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(DbSettings.ConnectionString);
@@ -30,10 +32,15 @@ namespace Musaca.Data
                 .HasKey(order => order.Id);
 
             modelBuilder.Entity<Order>()
-                .HasMany(order => order.Products);
+                .HasMany(order => order.Products)
+                .WithOne(orderProduct => orderProduct.Order)
+                .HasForeignKey(order => order.OrderId);
 
             modelBuilder.Entity<Order>()
                 .HasOne(order => order.Cashier);
+
+            modelBuilder.Entity<OrderProduct>()
+               .HasKey(orderProduct => new { orderProduct.OrderId, orderProduct.ProductId });
 
             base.OnModelCreating(modelBuilder);
         }

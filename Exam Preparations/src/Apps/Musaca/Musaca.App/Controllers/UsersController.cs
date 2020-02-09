@@ -1,4 +1,6 @@
 ﻿using Musaca.App.BindingModels.Users;
+using Musaca.App.ViewModels.Orders;
+using Musaca.App.ViewModels.Users;
 using Musaca.Models;
 using Musaca.Services;
 using SIS.MvcFramework;
@@ -6,18 +8,22 @@ using SIS.MvcFramework.Attributes;
 using SIS.MvcFramework.Attributes.Action;
 using SIS.MvcFramework.Attributes.Security;
 using SIS.MvcFramework.Result;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using SIS.MvcFramework.Mapping;
 
 namespace Musaca.App.Controllers
 {
     public class UsersController : Controller
     {
         private readonly IUsersService usersService;
+        private readonly IOrdersService ordersService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, IOrdersService ordersService)
         {
             this.usersService = usersService;
+            this.ordersService = ordersService;
         }
 
         public IActionResult Login()
@@ -71,6 +77,7 @@ namespace Musaca.App.Controllers
             };
 
             this.usersService.CreateUser(user);
+            this.ordersService.CreateOrder(new Order { CashierId = user.Id });
 
             return this.Redirect("/Users/Login");
         }
@@ -90,6 +97,31 @@ namespace Musaca.App.Controllers
             {
                 return Encoding.UTF8.GetString(sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password)));
             }
+        }
+
+        public IActionResult Profile()
+        {
+            var userProfileViewModel = new UserProfileViewModel();
+            var ordersFromDb = this.ordersService.GetAllCompletedOrdersByCashierId(this.User.Id);
+
+            userProfileViewModel.Orders = ordersFromDb
+                .To<OrderProfileViewModel>()
+                .ToList();
+
+            foreach (var order in userProfileViewModel.Orders)
+            {
+                order.CashierName = this.User.Username;
+
+                order.Total = ordersFromDb.Where(orderF => orderF.Id == order.Id)
+                    .SelectMany(orderF => orderF.Products)
+                    .Sum(pr => pr.Product.Price)
+                    .ToString();
+
+                order.IssuedOnDate = ordersFromDb.SingleOrDefault(orderF => orderF.Id == order.Id).IssuedOn
+                    .ToString("dd/MM/yyyy");
+            }
+
+            return this.View(userProfileViewModel);
         }
     }
 }

@@ -18,6 +18,17 @@ namespace Musaca.Services
 
         public bool AddProductToCurrentActiveOrder(string productId, string userId)
         {
+            var productFromDb = this.context.Products.SingleOrDefault(product => product.Id == productId);
+
+            var currentActiveOrder = this.GetCurrentActiveOrderByCashierId(userId);
+            currentActiveOrder.Products.Add(new OrderProduct
+            {
+                Product = productFromDb
+            });
+
+            this.context.Update(currentActiveOrder);
+            this.context.SaveChanges();
+
             return true;
         }
 
@@ -46,12 +57,22 @@ namespace Musaca.Services
 
         public List<Order> GetAllCompletedOrdersByCashierId(string userId)
         {
-            return new List<Order>();
+            return this.context.Orders
+                .Include(order => order.Products)
+                .ThenInclude(orderProduct => orderProduct.Product)
+                .Include(order => order.Cashier)
+                .Where(order => order.CashierId == userId)
+                .Where(order => order.Status == OrderStatus.Completed)
+                .ToList();
         }
 
         public Order GetCurrentActiveOrderByCashierId(string userId)
         {
-            return new Order();
+            return this.context.Orders
+                .Include(order => order.Products)
+                .ThenInclude(orderProduct => orderProduct.Product)
+                .Include(order => order.Cashier)
+                .SingleOrDefault(order => order.CashierId == userId && order.Status == OrderStatus.Active);
         }
     }
 }

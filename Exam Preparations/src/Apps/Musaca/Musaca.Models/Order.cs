@@ -8,7 +8,7 @@ namespace Musaca.Models
         public Order()
         {
             this.Id = Guid.NewGuid().ToString();
-            this.Products = new HashSet<Product>();
+            this.Products = new HashSet<OrderProduct>();
         }
 
         public string Id { get; set; }
@@ -17,7 +17,7 @@ namespace Musaca.Models
 
         public DateTime IssuedOn  { get; set; }
 
-        public ICollection<Product> Products { get; set; }
+        public ICollection<OrderProduct> Products { get; set; }
 
         public string CashierId { get; set; }
 
