@@ -10,7 +10,7 @@
     {
         public void Configure(IServerRoutingTable serverRoutingTable)
         {
-            using (var db = new SULSDbContext())
+            using (var db = new SulsDbContext())
             {
                 db.Database.EnsureCreated();
             }
@@ -19,6 +19,8 @@
         public void ConfigureServices(IServiceProvider serviceProvider)
         {
             serviceProvider.Add<IUsersService, UsersService>();
+            serviceProvider.Add<IProblemsService, ProblemsService>();
+            serviceProvider.Add<ISubmissionsService, SubmissionsService>();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace SULS.Models
 
         [Required]
         [MaxLength(800)]
-        public string HasCode { get; set; }
+        public string Code { get; set; }
 
         [Required]
         [Range(0, 300)]
@@ -18,8 +18,12 @@ namespace SULS.Models
         [Required]
         public DateTime CreatedOn { get; set; }
 
-        public Problem HasProblem { get; set; }
+        public string ProblemId { get; set; }
 
-        public User HasUser { get; set; }
+        public Problem Problem { get; set; }
+
+        public string UserId { get; set; }
+
+        public User User { get; set; }
     }
 }

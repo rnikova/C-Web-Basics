@@ -3,7 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using SULS.Models;
 
-    public class SULSDbContext : DbContext
+    public class SulsDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
 

@@ -30,6 +30,7 @@ namespace SULS.App.Controllers
             }
 
             var user = this.usersService.GetUserOrNull(input.Username, input.Password);
+
             if (user == null)
             {
                 return this.Redirect("/Users/Login");
@@ -59,7 +60,6 @@ namespace SULS.App.Controllers
             }
 
             var userId = this.usersService.CreateUser(input.Username, input.Email, input.Password);
-            this.SignIn(userId, input.Username, input.Email);
 
             return this.Redirect("/");
         }

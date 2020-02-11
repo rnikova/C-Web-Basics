@@ -1,5 +1,6 @@
 ﻿using SULS.Data;
 using SULS.Models;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,9 +9,9 @@ namespace SULS.Services
 {
     public class UsersService : IUsersService
     {
-        private readonly SULSDbContext dbContext;
+        private readonly SulsDbContext dbContext;
 
-        public UsersService(SULSDbContext dbContext)
+        public UsersService(SulsDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
@@ -21,7 +22,7 @@ namespace SULS.Services
             {
                 Username = username,
                 Email = email,
-                Password = this.HashPassword(password),
+                Password = this.HashPassword(password)
             };
 
             this.dbContext.Users.Add(user);

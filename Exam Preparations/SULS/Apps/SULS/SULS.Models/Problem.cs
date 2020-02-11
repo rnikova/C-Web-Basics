@@ -15,6 +15,7 @@ namespace SULS.Models
         public int Points { get; set; }
 
         public string UserId { get; set; }
+
         public User User { get; set; }
 
         public ICollection<Submission> Submissions { get; set; } = new HashSet<Submission>();
