@@ -15,7 +15,7 @@ namespace IRunes.Services
             this.context = context;
         }
 
-        public void CreateUser(string username, string email, string password)
+        public void Register(string username, string email, string password)
         {
             var user = new User
             {
@@ -27,6 +27,18 @@ namespace IRunes.Services
             this.context.Users.Add(user);
             this.context.SaveChanges();
         }
+     
+        public string GetUserId(string username, string password)
+        {
+            var user = this.context.Users.FirstOrDefault(x => x.Username == username && x.Password == this.Hash(password));
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user.Id;
+        }
 
         public string GetUsername(string id)
         {
@@ -36,6 +48,16 @@ namespace IRunes.Services
                 .FirstOrDefault();
 
             return username;
+        }
+
+        public bool UsernameExists(string username)
+        {
+            return this.context.Users.Any(x => x.Username == username);
+        }
+
+        public bool EmailExists(string email)
+        {
+            return this.context.Users.Any(x => x.Email == email);
         }
 
         private string Hash(string input)

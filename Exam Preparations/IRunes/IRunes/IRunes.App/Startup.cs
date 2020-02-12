@@ -3,7 +3,7 @@
     using System.Collections.Generic;
 
     using IRunes.Data;
-
+    using IRunes.Services;
     using SIS.HTTP;
     using SIS.MvcFramework;
 
@@ -19,6 +19,9 @@
 
         public void ConfigureServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.Add<IUsersService, UserService>();
+            serviceCollection.Add<IAlbumsService, AlbumsService>();
+            serviceCollection.Add<ITracksService, TracksService>();
         }
     }
 }
