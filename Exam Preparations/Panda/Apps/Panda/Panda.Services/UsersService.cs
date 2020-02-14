@@ -1,5 +1,6 @@
 ﻿using Panda.Data;
 using Panda.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,7 +15,14 @@ namespace Panda.Services
         {
             this.context = context;
         }
-        
+
+        public IEnumerable<string> GetAllUsernames()
+        {
+            var users = this.context.Users.Select(x => x.Username).ToList();
+
+            return users;
+        }
+
         public void Create(string username, string email, string password)
         {
             var hashPassword = this.HashPassword(password);

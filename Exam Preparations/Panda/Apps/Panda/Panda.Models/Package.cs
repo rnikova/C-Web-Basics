@@ -26,6 +26,6 @@ namespace Panda.Models
         [Required]
         public string RecipientId { get; set; }
 
-        public User User { get; set; }
+        public User Recipient { get; set; }
     }
 }
